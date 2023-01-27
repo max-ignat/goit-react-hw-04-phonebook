@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Box} from '../App.styled'
+import { Box } from '../App.styled';
 import Form from './Form';
 import Contacts from './Contacts';
 import Filter from './Filter';
@@ -8,15 +8,33 @@ import shortid from 'shortid';
 class App extends Component {
   state = {
     contacts: [
-      { id: 'id-1', name: 'Bruce Wayne', number: '459-12-56' },
-      { id: 'id-2', name: 'Matt Murdock', number: '443-89-12' },
-      { id: 'id-3', name: 'Sam Fisher', number: '645-17-79' },
-      { id: 'id-4', name: 'Felicia Hardy', number: '227-91-26' },
-      { id: 'id-5', name: 'Peter Parker', number: '227-91-26' },
+      // { id: 'id-1', name: 'Bruce Wayne', number: '459-12-56' },
+      // { id: 'id-2', name: 'Matt Murdock', number: '443-89-12' },
+      // { id: 'id-3', name: 'Sam Fisher', number: '645-17-79' },
+      // { id: 'id-4', name: 'Felicia Hardy', number: '227-91-26' },
+      // { id: 'id-5', name: 'Peter Parker', number: '227-91-26' },
     ],
     filter: '',
   };
 
+  componentDidMount() {
+    console.log('componentDidMount');
+    const contactsFromLocalStorage = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contactsFromLocalStorage);
+    // console.log("parsedContacts", parsedContacts)
+    if (parsedContacts) {
+      this.setState({
+        contacts: parsedContacts,
+      });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+      console.log('contacts updateed');
+    }
+    console.log('componentDidUpdate');
+  }
   addToContacts = ({ name, number }) => {
     // console.log('State from Form', 'Name', name, 'Number', number);
     const lowerCasedName = name.toLowerCase();
@@ -56,12 +74,11 @@ class App extends Component {
     );
   };
   render() {
+    // console.log('App render');
     return (
       <Box>
         <Form submitProp={this.addToContacts} />
-        <Filter
-          value={this.state.filter}
-          onChange={this.changeFilter} />
+        <Filter value={this.state.filter} onChange={this.changeFilter} />
         <Contacts
           contacts={this.filteredContacts()}
           onDeleteContact={this.deleteContact}
