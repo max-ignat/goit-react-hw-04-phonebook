@@ -3,7 +3,9 @@ import { Box } from '../App.styled';
 import Form from './Form';
 import Contacts from './Contacts';
 import Filter from './Filter';
+import Modal from './Modal';
 import shortid from 'shortid';
+import { Title } from './Form/Form.styled';
 
 class App extends Component {
   state = {
@@ -15,6 +17,13 @@ class App extends Component {
       // { id: 'id-5', name: 'Peter Parker', number: '227-91-26' },
     ],
     filter: '',
+    showModal: false,
+  };
+
+  toggleModal = () => {
+    this.setState(({showModal} )=> ({
+      showModal: !showModal,
+    }));
   };
 
   componentDidMount() {
@@ -31,9 +40,9 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.contacts !== prevState.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-      console.log('contacts updateed');
+      // console.log('contacts updateed');
     }
-    console.log('componentDidUpdate');
+    // console.log('componentDidUpdate');
   }
   addToContacts = ({ name, number }) => {
     // console.log('State from Form', 'Name', name, 'Number', number);
@@ -55,6 +64,7 @@ class App extends Component {
     };
 
     this.setState(prevSate => ({ contacts: [...prevSate.contacts, contact] }));
+    this.toggleModal();
   };
 
   deleteContact = id => {
@@ -75,9 +85,22 @@ class App extends Component {
   };
   render() {
     // console.log('App render');
+    const { showModal } = this.state;
     return (
       <Box>
-        <Form submitProp={this.addToContacts} />
+        <Title>Phone Book</Title>
+        <button type="button" onClick={this.toggleModal}>
+          Add contact
+        </button>
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <Form submitProp={this.addToContacts} />
+
+            <button type="button" onClick={this.toggleModal}>
+              minimize
+            </button>
+          </Modal>
+        )}
         <Filter value={this.state.filter} onChange={this.changeFilter} />
         <Contacts
           contacts={this.filteredContacts()}

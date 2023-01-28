@@ -10,7 +10,7 @@ const Contacts = ({ contacts, onDeleteContact }) => {
 //   console.log(contacts);
     return (
       <div>
-        <ListTitle>Contacts</ListTitle>
+        <ListTitle>Your contacts</ListTitle>
         <ContactList>
           {contacts.map(({ id, name, number }) => (
             <Contact key={id}>
