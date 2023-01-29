@@ -4,6 +4,7 @@ import Form from './Form';
 import Contacts from './Contacts';
 import Filter from './Filter';
 import Modal from './Modal';
+import { ModalButton } from './Modal/Modal.styled';
 import shortid from 'shortid';
 import { Title } from './Form/Form.styled';
 
@@ -89,16 +90,16 @@ class App extends Component {
     return (
       <Box>
         <Title>Phone Book</Title>
-        <button type="button" onClick={this.toggleModal}>
+        <ModalButton type="button" onClick={this.toggleModal}>
           Add contact
-        </button>
+        </ModalButton>
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <Form submitProp={this.addToContacts} />
 
-            <button type="button" onClick={this.toggleModal}>
+            <ModalButton type="button" onClick={this.toggleModal}>
               minimize
-            </button>
+            </ModalButton>
           </Modal>
         )}
         <Filter value={this.state.filter} onChange={this.changeFilter} />
