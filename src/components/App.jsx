@@ -95,7 +95,7 @@ class App extends Component {
         </ModalButton>
         {showModal && (
           <Modal onClose={this.toggleModal}>
-            <Form submitProp={this.addToContacts} />
+            <Form submitPropValue={this.addToContacts} />
 
             <ModalButton type="button" onClick={this.toggleModal}>
               minimize

@@ -1,77 +1,89 @@
-import React, { Component } from 'react';
-import { FormInput, Label, Button, Title, FormWrap} from './Form.styled';
+import React from 'react';
+import { Formik } from 'formik';
+import { FormInput, Label, Button, Title, FormWrap, Error} from './Form.styled';
 import shortid from 'shortid';
-class Form extends Component {
-  state = {
+import * as yup from 'yup';
+import { useState } from 'react';
+
+
+const schema = yup.object().shape({
+  name: yup.string().required('Name is required field'),
+  number: yup.number().min(6).required('Enter minimum 6 digits').positive().integer(),
+});
+
+const Form = ({ submitPropValue }) => {
+  const [state, setState] = useState({
     name: '',
     number: '',
-  };
+  });
 
-  handleInputChange = event => {
+  const handleChange = ({ target }) => {
     // console.log(event.currentTarget.value);
 
-    const { name, value } = event.currentTarget;
-    this.setState({
-      [name]: value,
+    const { name, value } = target;
+    setState(prevState => {
+      return { ...prevState, [name]: value };
     });
   };
 
-  nameInputId = shortid.generate();
-  numberInputId = shortid.generate();
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
 
-    this.props.submitProp(this.state);
+    submitPropValue({ name, number });
 
-    this.reset();
+    reset();
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
+  const reset = () => {
+    setState({ name: '', number: '' });
   };
 
-  render() {
-    const { name, number } = this.state;
-    return (
-      <div>
-        <Title>Phone Book</Title>
-        <FormWrap onSubmit={this.handleSubmit}>
-          <Label htmlFor={this.nameInputId}>
+  const nameInputId = shortid.generate();
+  const numberInputId = shortid.generate();
+
+  const { name, number } = state;
+  return (
+    <div>
+      <Title>Phone Book</Title>
+      <Formik validationSchema={schema}>
+        <FormWrap onSubmit={handleSubmit}>
+          <Label htmlFor={nameInputId}>
             Name
             <FormInput
-              onChange={this.handleInputChange}
+              onChange={handleChange}
               type="text"
               name="name"
               placeholder="  type name"
               pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+              // title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
               value={name}
-              id={this.nameInputId}
+              id={nameInputId}
               required
             />
+            <Error component="div" name="name" />
           </Label>
 
-          <Label htmlFor={this.numberInputId}>
+          <Label htmlFor={numberInputId}>
             Number
             <FormInput
-              onChange={this.handleInputChange}
+              onChange={handleChange}
               type="tel"
               name="number"
               placeholder="  type digits"
               pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+              // title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
               value={number}
-              id={this.numberInputId}
+              id={numberInputId}
               required
             />
+            <Error component="div" name="number" />
           </Label>
 
           <Button type="submit">Add contact</Button>
         </FormWrap>
-      </div>
-    );
-  }
-}
+      </Formik>
+    </div>
+  );
+};
 
 export default Form;
