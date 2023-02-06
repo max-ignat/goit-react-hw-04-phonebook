@@ -1,9 +1,9 @@
-import React from 'react';
+import React , { useState } from 'react';
 import { Formik } from 'formik';
 import { FormInput, Label, Button, Title, FormWrap, Error} from './Form.styled';
 import shortid from 'shortid';
 import * as yup from 'yup';
-import { useState } from 'react';
+
 
 
 const schema = yup.object().shape({

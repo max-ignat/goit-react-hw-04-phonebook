@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '../App.styled';
 import Form from './Form';
 import Contacts from './Contacts';
@@ -8,55 +8,31 @@ import { ModalButton } from './Modal/Modal.styled';
 import shortid from 'shortid';
 import { Title } from './Form/Form.styled';
 
-class App extends Component {
-  state = {
-    contacts: [
-      // { id: 'id-1', name: 'Bruce Wayne', number: '459-12-56' },
-      // { id: 'id-2', name: 'Matt Murdock', number: '443-89-12' },
-      // { id: 'id-3', name: 'Sam Fisher', number: '645-17-79' },
-      // { id: 'id-4', name: 'Felicia Hardy', number: '227-91-26' },
-      // { id: 'id-5', name: 'Peter Parker', number: '227-91-26' },
-    ],
-    filter: '',
-    showModal: false,
+const  App = () => {
+  const [contacts, setContacts] = useState(() => {
+   return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+})
+  const [filter, setFilter] = useState('')
+  const [showModal, setShowModal] = useState (false)
+  
+  const toggleModal = () => {
+    if (showModal) {
+      setShowModal(false);
+    } else {
+      setShowModal(true);
+   }
   };
-
-  toggleModal = () => {
-    this.setState(({showModal} )=> ({
-      showModal: !showModal,
-    }));
-  };
-
-  componentDidMount() {
-    console.log('componentDidMount');
-    const contactsFromLocalStorage = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contactsFromLocalStorage);
-    // console.log("parsedContacts", parsedContacts)
-    if (parsedContacts) {
-      this.setState({
-        contacts: parsedContacts,
-      });
-    }
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-      // console.log('contacts updateed');
-    }
-    // console.log('componentDidUpdate');
-  }
-  addToContacts = ({ name, number }) => {
+  useEffect(() => {
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+  
+  const addToContacts = ({ name, number }) => {
     // console.log('State from Form', 'Name', name, 'Number', number);
     const lowerCasedName = name.toLowerCase();
-    const { contacts } = this.state;
+    
     let added = contacts.find(
       contact => contact.name.toLowerCase() === lowerCasedName
     );
-
-    if (added) {
-      alert(`${name} is already in contacts`);
-      return;
-    }
 
     const contact = {
       id: shortid.generate(),
@@ -64,52 +40,60 @@ class App extends Component {
       number,
     };
 
-    this.setState(prevSate => ({ contacts: [...prevSate.contacts, contact] }));
-    this.toggleModal();
+    if (added) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
+    
+
+    setContacts(prevSate =>  [...prevSate, contact] );
+    toggleModal();
   };
 
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+  const deleteContact = id => {
+    setContacts(prevState => 
+      prevState.filter(contact => contact.id !== id),
+    );
   };
 
-  changeFilter = event => {
-    this.setState({ filter: event.currentTarget.value });
+  const changeFilter = event => {
+    setFilter({ filter: event.currentTarget.value });
   };
-  filteredContacts = () => {
-    const { filter, contacts } = this.state;
+
+  // const { contacts } = contacts;
+  // const { filter } = filter;
+  const filteredContacts = () => {
+    
     const lowerCasedFilter = filter.toLowerCase();
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(lowerCasedFilter)
     );
   };
-  render() {
-    // console.log('App render');
-    const { showModal } = this.state;
+ 
     return (
       <Box>
         <Title>Phone Book</Title>
-        <ModalButton type="button" onClick={this.toggleModal}>
+        <ModalButton type="button" onClick={toggleModal}>
           Add contact
         </ModalButton>
         {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <Form submitPropValue={this.addToContacts} />
+          <Modal onClose={toggleModal}>
+            <Form submitPropValue={addToContacts} />
 
-            <ModalButton type="button" onClick={this.toggleModal}>
+            <ModalButton type="button" onClick={toggleModal}>
               minimize
             </ModalButton>
           </Modal>
         )}
-        <Filter value={this.state.filter} onChange={this.changeFilter} />
+        <Filter value={filter} onChange={changeFilter} />
         <Contacts
-          contacts={this.filteredContacts()}
-          onDeleteContact={this.deleteContact}
+          contacts={filteredContacts()}
+          onDeleteContact={deleteContact}
         />
       </Box>
     );
-  }
+  
 }
 
 export default App;
