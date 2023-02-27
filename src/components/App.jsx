@@ -57,20 +57,18 @@ const  App = () => {
     );
   };
 
-  const changeFilter = event => {
-    setFilter({ filter: event.currentTarget.value });
+  const changeFilter = ({target}) => {
+    setFilter( target.value );
   };
 
   // const { contacts } = contacts;
   // const { filter } = filter;
-  const filteredContacts = () => {
-    
-    const lowerCasedFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(lowerCasedFilter)
-    );
-  };
- 
+   const filteredContacts = () => {
+     const lowerCasedFilter = filter.toLowerCase();
+     return contacts.filter(contact =>
+       contact.name.toLowerCase().includes(lowerCasedFilter)
+     );
+   };
     return (
       <Box>
         <Title>Phone Book</Title>
